@@ -56,7 +56,7 @@
                     </fieldset>
 					{{#if item.contentType}}
 					<video controls>
-						<source id="videoSource" src="" type="video/mp4"/>
+						<source id="videoSource" src="" type="{{item.contentType}}"/>
 						<!-- fallback -->
 						Your browser does not support the <code>video</code> element.
 					</video>
@@ -155,7 +155,18 @@
 				<div class="mwf-imgbutton mwf-img-delete mwf-right-align" on-click="deleteItem"></div>
 			</header>
 			<div class="mwf-body mwf-scrollview">
+
+
+				{{#if item.contentType}}
+				<video controls>
+					<source src="{{item.src}}" type="{{item.contentType}}"/>
+					<!-- fallback -->
+					Your browser does not support the <code>video</code> element.
+				</video>
+				{{else}}
 				<img src="{{item.src}}"/>
+				{{/if}}
+
 				<div>{{item.description}}</div>
 			</div>
 			<footer>
