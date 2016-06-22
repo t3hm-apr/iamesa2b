@@ -40,6 +40,18 @@ requirejs.config({
     }
 );
 
+var serverOnline;
+function ifServerOnline(ifOnline, ifOffline) {
+    var img = document.body.appendChild(document.createElement("img"));
+    img.onload = function() {
+        ifOnline && ifOnline.constructor == Function && ifOnline();
+    };
+    img.onerror = function() {
+        ifOffline && ifOffline.constructor == Function && ifOffline();
+    };
+    img.src = location.href+"content/img/ping.gif";
+}
+
 // here, we load all modules that will be required at runtime, those that will be instantiated dynamically by the mwf core framework need to be declared explicitly here - this is necessary for all ViewController components
 // TODO-REPEATED: add new ViewControllers to the dependency array
 requirejs(["mwf","GenericDialogTemplateViewController","MyApplication", "MyInitialViewController","ListviewViewController","ReadviewViewController","EditViewController"],

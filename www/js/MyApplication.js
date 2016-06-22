@@ -8,6 +8,17 @@ define(["mwf","mwfUtils","EntityManager","entities","GenericCRUDImplLocal","Gene
         var proto = MyApplication.prototype;
 
         this.oncreate = function(callback) {
+            // check if the server is available
+            ifServerOnline(
+                function() {
+                    //  server online code here
+                    serverOnline = true;
+                },
+                function () {
+                    //  server offline code here
+                    serverOnline = false;
+                }
+            );
             console.log("MyApplication.oncreate(): calling supertype oncreate");
 
             // first call the supertype method and pass a callback
@@ -25,9 +36,12 @@ define(["mwf","mwfUtils","EntityManager","entities","GenericCRUDImplLocal","Gene
                     // TODO: do any further application specific initialisations here
 					this.registerEntity("MediaItem", entities.MediaItem, true);
 					this.registerCRUD("MediaItem", this.CRUDOPS.LOCAL, GenericCRUDImplLocal.newInstance("MediaItem"));
-					this.registerCRUD("MediaItem", this.CRUDOPS.REMOTE, GenericCRUDImplRemote.newInstance("MediaItem"));
-					
-					this.initialiseCRUD(this.CRUDOPS.REMOTE,EntityManager);
+                    this.registerCRUD("MediaItem", this.CRUDOPS.REMOTE, GenericCRUDImplRemote.newInstance("MediaItem"));
+                    if(serverOnline) {
+                        this.initialiseCRUD(this.CRUDOPS.LOCAL,EntityManager);
+                    } else {
+                        this.initialiseCRUD(this.CRUDOPS.REMOTE,EntityManager);
+                    }
 
                     // THIS MUST NOT BE FORGOTTEN: initialise the entity manager!
                     EntityManager.initialise();

@@ -42,6 +42,7 @@ server = http.createServer(function(req, res) {
                 // if the root is accessed we serve the main html document
                 path = "app.html";
             }
+
             // serveable resources will be put in the webcontent directory -- the callback will be passed the data read out from the file being accessed
             fs.readFile(__dirname + "/www/" + path, function (err, data) {
                 // check whether we have got an error retrieving the resource: create a 404 error, assuming that a wrong uri was used
@@ -52,10 +53,13 @@ server = http.createServer(function(req, res) {
                 }
                 // otherwise create a 200 response and set the content type header
                 else {
-                    res.writeHead(200, {
-                        'Content-Type': contentType(path)
-                    });
-                    res.write(data, 'utf8');
+
+
+                        res.writeHead(200, {
+                            'Content-Type': contentType(path)
+                        });
+                        res.write(data, 'utf8');
+
                     res.end();
                 }
             });
@@ -108,6 +112,8 @@ function contentType(path) {
         return "video/ogg";
     } else if (path.match('.ogg$')) {
         return "audio/ogg";
+    } else if (path.match('.mp4')) {
+        return "media";
     } else if (path.match('.manifest$')) {
         return "text/cache-manifest";
     } else if (path.match('.webapp$')) {

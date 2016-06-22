@@ -54,7 +54,15 @@
 						<input class="mwf-autofocus mwf-dynvalue hiddenFileType" id="itemFile" name='itemFile' type="file" placeholder="..." value="{{item.src}}"
 							   accept="image/gif,image/jpeg,image/png,video/mp4,video/ogg,video/webm" />
                     </fieldset>
+					{{#if item.contentType}}
+					<video controls>
+						<source id="videoSource" src="" type="video/mp4"/>
+						<!-- fallback -->
+						Your browser does not support the <code>video</code> element.
+					</video>
+					{{else}}
                     <img id="previewImg" src="" />
+					{{/if}}
                     <fieldset>
                         <legend>
                             Titel

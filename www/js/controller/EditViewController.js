@@ -13,6 +13,10 @@ define(["mwf","entities"], function(mwf, entities) {
          */
         this.oncreate = function (callback) {
             var mediaItem = this.args.item;
+            // change the relative url of the mediaitem to a absolute valid url
+            if(mediaItem.src.indexOf('content/img/') == 0) {
+                mediaItem.src = location.href+mediaItem.src;
+            }
             viewProxy = this.bindElement("mediaEditTemplate",{item:mediaItem},this.root).viewProxy;
 
             viewProxy.bindAction("deleteItem",function() {
@@ -24,8 +28,7 @@ define(["mwf","entities"], function(mwf, entities) {
 
             viewProxy.bindAction("onsubmit",function(event) {
                 event.original.preventDefault();
-                var clickedElement = event.node.id;
-                if(clickedElement == "radioUrl") {
+                if(editform.mediatype.value == "url") {
                     if(mediaItem._id == -2) {
                         mediaItem.create(function(){
                             this.notifyListeners(new mwf.Event("crud","created","MediaItem",mediaItem._id));
@@ -50,7 +53,7 @@ define(["mwf","entities"], function(mwf, entities) {
                             if (xhr.status == 200) {
                                 var responseObj = JSON.parse(xhr.responseText).data;
                                 console.log(responseObj);
-                                var mediaItem = new entities.MediaItem(responseObj.name,responseObj.src,responseObj.contentType,responseObj.desc,"FILE");
+                                var mediaItem = new entities.MediaItem(responseObj.name,responseObj.src,responseObj.contentType,responseObj.desc,"URL");
                                 mediaItem.create(function(){
                                     self.notifyListeners(new mwf.Event("crud","created","MediaItem",mediaItem._id));
                                 }.bind(self));
@@ -61,13 +64,7 @@ define(["mwf","entities"], function(mwf, entities) {
                     xhr.open("POST", "http2mdb/www/content/formdata");
                     xhr.send(formdata);
                 }
-
-
             }.bind(this));
-
-            viewProxy.bindAction("MultipartResponse", function(){
-               alert("HIHI");
-            });
 
             // action if the radiobutton is checked
             // hidde the not needed elemtent and mark url as required if it is checked
@@ -93,13 +90,20 @@ define(["mwf","entities"], function(mwf, entities) {
 
             // if new mediaitem set a placeholder image
             if(mediaItem.src != "") {
-                document.getElementById("previewImg").src = mediaItem.src;
+                var previewImage = document.getElementById("previewImg");
+                if (previewImage) {
+                    previewImage.src = mediaItem.src;
+                }
+                var videoSource = document.getElementById("videoSource");
+                if (videoSource) {
+                    videoSource.src = mediaItem.src;
+                }
             } else {
                 document.getElementById("previewImg").src = "content/img/placeholder.gif";
             }
 
             // if the mediaitem from type url or it is new set the radiobutton url on checked
-            if(this.application.currentCRUDScope == 'local') {
+            if(this.application.currentCRUDScope == 'local' || !serverOnline) {
                 document.getElementById("radioUrl").checked="checked";
                 document.getElementById("radioFile").disabled = true;
             } else {
