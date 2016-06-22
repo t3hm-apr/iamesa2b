@@ -1,0 +1,163 @@
+<!-- 
+ @author Jörn Kreutel
+ @author Benjamin Schmidt
+ @author Alex Preugschat
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MY MWF APP</title>
+    <!-- this tag avoids scaling the view on display -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- load the styles -->
+    <link rel="stylesheet" href="lib/css/normalize.css"/>
+    <link rel="stylesheet" href="lib/css/mwf.css"/>
+    <link rel="stylesheet" href="lib/css/mwfIcons.css"/>
+    <!-- the application specific style -->
+    <link rel="stylesheet" href="css/mystyle.css"/>
+    <!-- TODO: comment-in if mapviews shall be used. It seems that libs and css need to be accessed online rather than be provided locally, there is also some issue when using leaflet+offline manifest... -->
+    <!--
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css"/>
+        <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    -->
+    <!-- ractive templating engine -->
+    <script src="lib/js/external/ractive.min.js"></script>
+    <!-- user require.js for local script loading -->
+    <script data-main="js/Main.js" src="lib/js/external/require.js"></script>
+</head>
+<!-- TODO: change the application name if it is adapted -->
+<body data-mwf-application="MyApplication">
+	<!-- TODO-REPEATED: add new views here -->
+
+    <div class="mwf-view" id="mediaEdit" data-mwf-viewcontroller="EditViewController">
+        <div class="mwf-template mwf-databind" data-mwf-templatename="mediaEditTemplate" data-mwf-viewcontroller="EditViewController">
+            <header>
+                <div class="mwf-imgbutton mwf-img-sandwich mwf-left-align" id="resetDatabase"></div>
+                <h2>{{#if item.created}}Editieren: {{item.name}}{{else}}Neues Medium{{/if}}</h2>
+                <input class="mwf-right-align mwf-imgbutton mwf-img-disk" type="submit" form="editform" value="Speichern" />
+                {{#if item._id == -2}}
+                    <div class="mwf-imgbutton mwf-img-delete mwf-right-align mwf-disabled" on-click="deleteItem" disabled="disabled"></div>
+                {{else}}
+                    <div class="mwf-imgbutton mwf-img-delete mwf-right-align" on-click="deleteItem" disabled="disabled"></div>
+                {{/if}}
+            </header>
+            <div class="mwf-body">
+                <form on-submit="onsubmit" id="editform" enctype="multipart/form-data" action="http2mdb/www/content/" method="post">
+                    <fieldset class="mwf-radiogroup">
+                        <legend>Bild auswählen</legend>
+                        <input type='radio' on-click="radioCheck" name='mediatype' value='url' id="radioUrl" checked="checked"><label for="radioUrl">URL</label>
+						<input type='radio' on-click="radioCheck" name='mediatype' value='file' id="radioFile" ><label for="radioFile">UPLOAD</label>
+						<input autocomplete="off" class="mwf-autofocus mwf-dynvalue" id="itemURL" name='itemURL' type="url" placeholder="..." value="{{item.src}}" />
+						<input class="mwf-autofocus mwf-dynvalue hiddenFileType" id="itemFile" name='itemFile' type="file" placeholder="..." value="{{item.src}}"
+							   accept="image/gif,image/jpeg,image/png,video/mp4,video/ogg,video/webm" />
+                    </fieldset>
+                    <img id="previewImg" src="" />
+                    <fieldset>
+                        <legend>
+                            Titel
+                        </legend>
+                        <input autocomplete="off" class="mwf-autofocus mwf-dynvalue" id="mediaItemTitle" name="mediaItemTitle" type="text" placeholder="..." value="{{item.name}}" required />
+                    </fieldset>
+                    <fieldset>
+                        <legend>
+                            Beschreibung
+                        </legend>
+                        <textarea id="mediaItemDesc" name="mediaItemDesc" rows="2" placeholder="..." value="{{item.description}}" required ></textarea>
+                    </fieldset>
+                </form>
+            </div>
+            <footer><div class="mwf-back mwf-imgbutton mwf-img-backward"></div></footer>
+        </div>
+    </div>
+
+
+
+
+
+
+
+	<div class="mwf-view mwf-view-initial" id="mediaOverview" data-mwf-viewcontroller="ListviewViewController">
+		<header>
+			<div class="mwf-imgbutton mwf-img-sandwich mwf-left-align" id="resetDatabase"></div>
+			<h2 class="mwf-left-align">Medien</h2>
+			<div class="mwf-imgbutton mwf-img-plus mwf-right-align" id="addNewMediaItem"></div>
+		</header>
+		<div class="mwf-body mwf-scrollview">
+			<ul class="mwf-listview" data-mwf-listitem-view="myapp-listitem" data-mwf-listitem-menu="mediaItemMenu">
+				<li class="mwf-listitem mwf-li-title-subtitle mwf-template mwf-databind" data-mwf-templatename="myapp-listitem" data-mwf-targetview="mediaReadview">
+				<img class="mwf-left-align" src="{{src}}"/>
+				<div class="mwf-li-titleblock">
+					<h2>{{name}}</h2>
+					<h3>{{addedDateString}}</h3>
+				</div>
+				<div class="mwf-imgbutton mwf-img-options-vertical mwf-right-align mwf-listitem-menu-control">
+				</div>
+			</ul>
+		</div>
+		<footer></footer>
+	</div>
+
+
+
+
+
+
+
+
+	<div class="mwf-listitem-menu mwf-template mwf-databind mwf-dialog mwf-popup" data-mwf-templatename="mediaItemMenu">
+		<header>
+			<h2 class="mwf-dyncontent">{{name}}</h2>
+		</header>
+		<div class="mwf-dialog-body">
+			<ul>
+				<li class="mwf-li-singletitle mwf-menu-item" data-mwf-targetaction="deleteItem">Löschen</li>
+				<li class="mwf-li-singletitle mwf-menu-item" data-mwf-targetaction="editItem">Editieren</li>
+			</ul>
+		</div>
+	</div>
+
+
+
+
+	<div class="mwf-dialog mwf-popup mwf-template mwf-databind mwf-view-component" data-mwf-templatename="mediaItemDialog" data-mwf-viewcontroller="GenericDialogTemplateViewController">
+		<div class="mwf-dialog-body">
+		<h2>{{#if item.created}}Medium editieren{{else}}Neues Medium{{/if}}</h2>
+		<form id="tagNameInputForm" on-submit="submitForm">
+			<input name="name" autocomplete="off" class="mwf-autofocus" type="text" placeholder="Name" required="required" value="{{item.name}}"/>
+			<div class="mwf-buttonbar">
+				<button class="mwf-left-align mwf-button" type="button" on-click="deleteItem" disabled="{{#unless item.created}}disabled{{/unless}}">Löschen</button>
+				<input id="createTagAction" class="mwf-button-prio mwf-right-align mwf-button" type="submit" value="{{#if item.created}}Ändern{{else}}Hinzufügen{{/if}}"/>
+			</div>
+		</form>
+		</div>
+	</div>
+
+
+
+
+	<div class="mwf-view" id="mediaReadview" data-mwf-viewcontroller="ReadviewViewController">
+		<div class="mwf-template mwf-databind" data-mwf-templatename="mediaReadviewTemplate" data-mwf-viewcontroller="ReadviewViewController">
+			<header>
+				<div class="mwf-imgbutton mwf-img-sandwich mwf-left-align"></div>
+				<h2>{{item.name}}</h2>
+				<div class="mwf-imgbutton mwf-img-pencil mwf-right-align" on-click="editItem"></div>
+				<div class="mwf-imgbutton mwf-img-delete mwf-right-align" on-click="deleteItem"></div>
+			</header>
+			<div class="mwf-body mwf-scrollview">
+				<img src="{{item.src}}"/>
+				<div>{{item.description}}</div>
+			</div>
+			<footer>
+				<div class="mwf-back mwf-imgbutton mwf-img-backward"></div>
+			</footer>
+		</div>
+	</div>
+
+
+
+
+</body>
+</html>
