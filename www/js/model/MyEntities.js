@@ -24,14 +24,15 @@ define(["mwfUtils", "EntityManager"], function (mwfUtils, EntityManager) {
     EntityManager.xtends(MyEntity, EntityManager.Entity);
 
     // TODO-REPEATED: add new entity type declarations here
-	function MediaItem(name,src,contentType,desc,contentProvision) {
+	function MediaItem(name,src,contentType,desc,contentProvision,orientation) {
 		this.name = name;
 		this.description = desc;
 		this.added = Date.now();
 		this.src = src;
 		this.contentType = contentType;
 		this.contentProvision = contentProvision;
-		
+		this.orientation = orientation;
+
 		this.instantiateManagedAttributes();
 	}
 	EntityManager.xtends(MediaItem, EntityManager.Entity);

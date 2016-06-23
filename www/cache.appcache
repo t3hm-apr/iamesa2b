@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# Generated: 19.06.2016 22:40:57
+# Generated: 20.06.2016 22:40:57
 
 CACHE:
 css/mystyle.css
@@ -12,6 +12,7 @@ js/model/MyEntities.js
 js/MyApplication.js
 lib/css/img/glyphicons/png/glyphicons-17-bin.png
 lib/css/img/glyphicons/png/glyphicons-211-arrow-left.png
+lib/css/img/glyphicons/png/glyphicons-221-play-button.png
 lib/css/img/glyphicons/png/glyphicons-31-pencil.png
 lib/css/img/glyphicons/png/glyphicons-433-plus.png
 lib/css/img/glyphicons/png/glyphicons-444-floppy-disk.png

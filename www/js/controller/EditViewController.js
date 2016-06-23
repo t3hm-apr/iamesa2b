@@ -8,11 +8,12 @@ define(["mwf","entities"], function(mwf, entities) {
         // declare a variable for accessing the prototype object (used für super() calls)
         var proto = EditViewController.prototype;
         var viewProxy;
+        var mediaItem;
         /*
          * for any view: initialise the view
          */
         this.oncreate = function (callback) {
-            var mediaItem = this.args.item;
+            mediaItem = this.args.item;
             // change the relative url of the mediaitem to a absolute valid url
             if(mediaItem.src.indexOf('content/img/') == 0) {
                 mediaItem.src = location.href+mediaItem.src;
@@ -52,12 +53,26 @@ define(["mwf","entities"], function(mwf, entities) {
                         if (xhr.readyState == 4) {
                             if (xhr.status == 200) {
                                 var responseObj = JSON.parse(xhr.responseText).data;
-                                console.log(responseObj);
-                                var mediaItem = new entities.MediaItem(responseObj.name,responseObj.src,responseObj.contentType,responseObj.desc,"URL");
-                                mediaItem.create(function(){
-                                    self.notifyListeners(new mwf.Event("crud","created","MediaItem",mediaItem._id));
-                                }.bind(self));
-                                self.previousView();
+                                console.log(responseObj.orientation);
+                                //var mediaItem = new entities.MediaItem(responseObj.name,responseObj.src,responseObj.contentType,responseObj.desc,"URL",responseObj.orientation);
+                                mediaItem.name              = responseObj.name;
+                                mediaItem.src               = responseObj.src;
+                                mediaItem.contentType       = responseObj.contentType;
+                                mediaItem.desc              = responseObj.desc;
+                                mediaItem.contentProvision  = "URL";
+                                //mediaItem.orientation       = responseObj.orientation;
+                                console.log(mediaItem.orientation);
+                                if(mediaItem._id == -2) {
+                                    mediaItem.create(function(){
+                                        self.notifyListeners(new mwf.Event("crud","created","MediaItem",mediaItem._id));
+                                    }.bind(self));
+                                    self.previousView();
+                                } else {
+                                    mediaItem.update(function(){
+                                        self.notifyListeners(new mwf.Event("crud","updated","MediaItem",mediaItem._id));
+                                    }.bind(self));
+                                    self.previousView();
+                                }
                             }
                         }
                     };
@@ -81,6 +96,25 @@ define(["mwf","entities"], function(mwf, entities) {
                     document.getElementById("itemURL").disabled = true;
                     document.getElementById("itemFile").className = "";
                 }
+            });
+
+            viewProxy.bindAction("renderPreview",function(){
+                if(editform.mediatype.value == "url") {
+                    tmpURL = editform.itemURL.value;
+                } else {
+                    newItem = editform.itemFile.files[0];
+                    tmpURL = URL.createObjectURL(newItem);
+                }
+
+                document.getElementById("previewImg").src = tmpURL;
+                document.getElementById("previewImg").addEventListener('load', function() {
+                    console.log(mediaItem);
+                    if(this.naturalWidth > this.naturalHeight) {
+                        mediaItem.orientation = 'landscape';
+                    } else {
+                        mediaItem.orientation = 'portrait';
+                    }
+                });
             });
 
             // call the superclass once creation is done

@@ -4,7 +4,7 @@
  @author Alex Preugschat
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" manifest="cache.appcache">
 <head>
     <meta charset="UTF-8">
     <title>MY MWF APP</title>
@@ -50,8 +50,8 @@
                         <legend>Bild auswählen</legend>
                         <input type='radio' on-click="radioCheck" name='mediatype' value='url' id="radioUrl" checked="checked"><label for="radioUrl">URL</label>
 						<input type='radio' on-click="radioCheck" name='mediatype' value='file' id="radioFile" ><label for="radioFile">UPLOAD</label>
-						<input autocomplete="off" class="mwf-autofocus mwf-dynvalue" id="itemURL" name='itemURL' type="url" placeholder="..." value="{{item.src}}" />
-						<input class="mwf-autofocus mwf-dynvalue hiddenFileType" id="itemFile" name='itemFile' type="file" placeholder="..." value="{{item.src}}"
+						<input autocomplete="off" class="mwf-autofocus mwf-dynvalue" on-blur="renderPreview" id="itemURL" name='itemURL' type="url" placeholder="..." value="{{item.src}}" />
+						<input class="mwf-autofocus mwf-dynvalue hiddenFileType" on-change="renderPreview" id="itemFile" name='itemFile' type="file" placeholder="..." value="{{item.src}}"
 							   accept="image/gif,image/jpeg,image/png,video/mp4,video/ogg,video/webm" />
                     </fieldset>
 					{{#if item.contentType}}
@@ -96,13 +96,12 @@
 		<div class="mwf-body mwf-scrollview">
 			<ul class="mwf-listview" data-mwf-listitem-view="myapp-listitem" data-mwf-listitem-menu="mediaItemMenu">
 				<li class="mwf-listitem mwf-li-title-subtitle mwf-template mwf-databind" data-mwf-templatename="myapp-listitem" data-mwf-targetview="mediaReadview">
-
-					{{#if contentType}}
+					{{#if contentType.startsWith('video') }}
 					<div class="videoPreview">
 						<div class="videoPlay"></div>
 					</div>
 					{{else}}
-					<img class="mwf-left-align" src="{{src}}"/>
+					<div class="mediaContainer"><img class="mwf-left-align {{orientation}}" src="{{src}}" /></div>
 					{{/if}}
 
 
