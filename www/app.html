@@ -54,7 +54,7 @@
 						<input class="mwf-autofocus mwf-dynvalue hiddenFileType" on-change="renderPreview" id="itemFile" name='itemFile' type="file" placeholder="..." value="{{item.src}}"
 							   accept="image/gif,image/jpeg,image/png,video/mp4,video/ogg,video/webm" />
                     </fieldset>
-					{{#if item.contentType}}
+					{{#if item.contentType.startsWith('video/') }}
 					<video controls>
 						<source id="videoSource" src="" type="{{item.contentType}}"/>
 						<!-- fallback -->
@@ -96,7 +96,7 @@
 		<div class="mwf-body mwf-scrollview">
 			<ul class="mwf-listview" data-mwf-listitem-view="myapp-listitem" data-mwf-listitem-menu="mediaItemMenu">
 				<li class="mwf-listitem mwf-li-title-subtitle mwf-template mwf-databind" data-mwf-templatename="myapp-listitem" data-mwf-targetview="mediaReadview">
-					{{#if contentType.startsWith('video') }}
+					{{#if contentType.startsWith('video/') }}
 					<div class="videoPreview">
 						<div class="videoPlay"></div>
 					</div>
@@ -165,7 +165,7 @@
 			<div class="mwf-body mwf-scrollview">
 
 
-				{{#if item.contentType}}
+				{{#if item.contentType.startsWith('video/') }}
 				<video controls>
 					<source src="{{item.src}}" type="{{item.contentType}}"/>
 					<!-- fallback -->
