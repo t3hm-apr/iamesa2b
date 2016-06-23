@@ -113,7 +113,7 @@ function contentType(path) {
     } else if (path.match('.ogg$')) {
         return "audio/ogg";
     } else if (path.match('.mp4')) {
-        return "media";
+        return "video/mp4";
     } else if (path.match('.manifest$')) {
         return "text/cache-manifest";
     } else if (path.match('.webapp$')) {

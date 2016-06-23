@@ -96,7 +96,16 @@
 		<div class="mwf-body mwf-scrollview">
 			<ul class="mwf-listview" data-mwf-listitem-view="myapp-listitem" data-mwf-listitem-menu="mediaItemMenu">
 				<li class="mwf-listitem mwf-li-title-subtitle mwf-template mwf-databind" data-mwf-templatename="myapp-listitem" data-mwf-targetview="mediaReadview">
-				<img class="mwf-left-align" src="{{src}}"/>
+
+					{{#if contentType}}
+					<div class="videoPreview">
+						<div class="videoPlay"></div>
+					</div>
+					{{else}}
+					<img class="mwf-left-align" src="{{src}}"/>
+					{{/if}}
+
+
 				<div class="mwf-li-titleblock">
 					<h2>{{name}}</h2>
 					<h3>{{addedDateString}}</h3>
